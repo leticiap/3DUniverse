@@ -1,3 +1,9 @@
+/************************************
+* Singleton class that contains the camera
+* I decided to do it as a singleton, as we only need
+* global camera that looks the entire scene.
+************************************/
+
 #include "Camera.h"
 #include <string>
 
@@ -13,6 +19,17 @@ Camera::Camera(glm::vec3 startPosition, glm::vec3 startUp, GLfloat startYaw, GLf
 	turnSpeed = startTurnSpeed;
 
 	Update();
+}
+
+Camera * Camera::getInstance()
+{
+	static Camera*  _instance;
+	if (!_instance)
+	{
+		_instance = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.0f, 0.5f);
+	}
+
+	return _instance;
 }
 
 void Camera::KeyControl(bool * keys, GLfloat deltaTime)

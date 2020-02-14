@@ -34,7 +34,7 @@ std::vector<Mesh*> meshList;
 std::vector<Shader> shaderList;
 Shader directionalShadowShader;
 Shader omniShadowShader;
-Camera camera;
+Camera* camera;
 
 Texture brickTexture;
 Texture dirtTexture;
@@ -251,7 +251,7 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 
 	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-	glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+	glUniform3f(uniformEyePosition, camera->getCameraPosition().x, camera->getCameraPosition().y, camera->getCameraPosition().z);
 
 	shaderList[0].SetDirectionalLight(&mainLight);
 	shaderList[0].SetPointLights(pointLights, pointLightCount, 3, 0);
@@ -263,9 +263,9 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	shaderList[0].SetTexture(1);
 	shaderList[0].SetDirectionalShadowMap(2);
 
-	glm::vec3 lowerLight = camera.getCameraPosition();
+	glm::vec3 lowerLight = camera->getCameraPosition();
 	lowerLight.y -= 0.3f;
-	spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
+	spotLights[0].SetFlash(lowerLight, camera->getCameraDirection());
 
 	shaderList[0].Validate();
 	RenderScene();
@@ -280,7 +280,7 @@ int main()
 	CreateObjects();
 	CreateShaders();
 
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.0f, 0.5f);
+	camera = Camera::getInstance();
 
 	brickTexture = Texture((char *) "Textures/brick.png");
 	brickTexture.LoadTextureAlpha();
@@ -356,8 +356,8 @@ int main()
 
 		// Get + Handle User Input
 		glfwPollEvents();
-		camera.KeyControl(mainWindow.getKeys(), deltaTime);
-		camera.MouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+		camera->KeyControl(mainWindow.getKeys(), deltaTime);
+		camera->MouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
 		if (mainWindow.getKeys()[GLFW_KEY_L])
 		{
@@ -374,12 +374,13 @@ int main()
 		{
 			OmniShadowMapPass(&spotLights[i]);
 		}
-		RenderPass(projection, camera.CalculateViewMatrix());
+		RenderPass(projection, camera->CalculateViewMatrix());
 
 		glUseProgram(0);
 
 		mainWindow.SwapBuffers();
 	}
+
 
 	return 0;
 }
