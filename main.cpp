@@ -43,7 +43,8 @@ Texture plainTexture;
 Material shinyMaterial;
 Material dullMaterial;
 
-Model skull;
+Model cat;
+Model wand;
 
 DirectionalLight mainLight;
 PointLight pointLights[MAX_POINT_LIGHTS];
@@ -182,11 +183,19 @@ void RenderScene()
 
 	model = glm::mat4();
 	model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
+	model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	plainTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
-	skull.RenderModel();
+	cat.RenderModel();
+
+	model = glm::mat4();
+	model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	brickTexture.UseTexture();
+	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+	wand.RenderModel();
 }
 
 void DirectionalShadowMapPass(DirectionalLight* light)
@@ -292,8 +301,11 @@ int main()
 	shinyMaterial = Material(4.0f, 256);
 	dullMaterial = Material(0.3f, 4);
 
-	skull = Model();
-	skull.LoadModel("Material/Skull.obj");
+	cat = Model();
+	cat.LoadModel("Material/Cat2.obj");
+
+	wand = Model();
+	wand.LoadModel("Material/Wand.obj");
 
 	mainLight = DirectionalLight(2048, 2048,
 								1.0f, 0.53f, 0.3f,
@@ -336,12 +348,12 @@ int main()
 	spotLightCount++;
 
 	std::vector<std::string> skyboxFaces;
-	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_rt.tga");
-	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_lf.tga");
-	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_up.tga");
-	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_dn.tga");
-	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_bk.tga");
-	skyboxFaces.push_back("Textures/Skybox/cupertin-lake_ft.tga");
+	skyboxFaces.push_back("Textures/Skybox/Yokohama/posx.jpg");
+	skyboxFaces.push_back("Textures/Skybox/Yokohama/negx.jpg");
+	skyboxFaces.push_back("Textures/Skybox/Yokohama/posy.jpg");
+	skyboxFaces.push_back("Textures/Skybox/Yokohama/negy.jpg");
+	skyboxFaces.push_back("Textures/Skybox/Yokohama/posz.jpg");
+	skyboxFaces.push_back("Textures/Skybox/Yokohama/negz.jpg");
 
 	skybox = Skybox(skyboxFaces);
 
@@ -363,6 +375,12 @@ int main()
 		{
 			spotLights[0].Toggle();
 			mainWindow.getKeys()[GLFW_KEY_L] = false;
+		}
+
+		if (mainWindow.getKeys()[GLFW_KEY_T])
+		{
+			cat = Model();
+			cat.LoadModel("Material/Cat1.obj");
 		}
 
 		DirectionalShadowMapPass(&mainLight);
