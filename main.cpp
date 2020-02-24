@@ -160,7 +160,7 @@ void RenderScene()
 {
 	glm::mat4 model;
 
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
+	model = glm::translate(model, glm::vec3(0.0f, -1.5f, -7.5f));
 	//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	brickTexture.UseTexture();
@@ -168,7 +168,7 @@ void RenderScene()
 	meshList[0]->RenderMesh();
 
 	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
+	model = glm::translate(model, glm::vec3(0.0f, -1.5, 1.5f));
 	//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	dirtTexture.UseTexture();
@@ -176,25 +176,25 @@ void RenderScene()
 	meshList[1]->RenderMesh();
 
 	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
+	model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	dirtTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[2]->RenderMesh();
 
+	// add "colision" to the wand, cat and triangles
 	if (catMove)
 	{
-		catAngle += 0.1f;
+		catAngle += 5.0f * deltaTime;
 		if (catAngle > 360.0f)
 		{
 			catAngle = 0.1f;
 		}
 	}
-
 	model = glm::mat4();
 	model = glm::rotate(model, glm::radians(-catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(5.0f, -2.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(5.0f, -3.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
 	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -202,9 +202,11 @@ void RenderScene()
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	cat.RenderModel();
 
+	// do something similar to pitch/yaw to rotate the wand with the came
+	// use the camera position to do the translate (it works!)
 	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+	model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.04f, 0.04f, 0.04f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	brickTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);

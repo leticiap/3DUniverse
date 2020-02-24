@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
+#include "CommonValues.h"
 
 class Camera
 {
@@ -28,6 +29,9 @@ private:
 	glm::vec3 up;
 	glm::vec3 right;
 	glm::vec3 worldUp;
+	// used to move the character on the x/z axis
+	glm::vec3 frontFixedY;
+	glm::vec3 rightFixedY;
 
 	GLfloat yaw;
 	GLfloat pitch;

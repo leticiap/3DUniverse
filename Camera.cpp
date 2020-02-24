@@ -38,22 +38,22 @@ void Camera::KeyControl(bool * keys, GLfloat deltaTime)
 
 	if (keys[GLFW_KEY_W])
 	{
-		position += front * velocity;
+		position += frontFixedY * velocity;
 	}
 
 	if (keys[GLFW_KEY_S])
 	{
-		position -= front * velocity;
+		position -= frontFixedY * velocity;
 	}
 
 	if (keys[GLFW_KEY_A])
 	{
-		position -= right * velocity;
+		position -= rightFixedY * velocity;
 	}
 
 	if (keys[GLFW_KEY_D])
 	{
-		position += right * velocity;
+		position += rightFixedY * velocity;
 	}
 }
 
@@ -67,13 +67,11 @@ void Camera::MouseControl(GLfloat xChange, GLfloat yChange)
 
 	if (pitch > 89.0f)
 	{
-		printf("pap\n");
 		pitch = 89.0f;
 	}
 
 	if (pitch < -89.0f)
 	{
-		printf("nak\n");
 		pitch = -89.0f;
 	}
 
@@ -107,7 +105,13 @@ void Camera::Update()
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front = glm::normalize(front);
+	frontFixedY.x = front.x;
+	frontFixedY.z = front.z;
 
 	right = glm::normalize(glm::cross(front, worldUp));
+	rightFixedY = glm::normalize(glm::cross(frontFixedY, worldUp));
 	up = glm::normalize(glm::cross(right, front));
+
+	position.x = glm::clamp(position.x, -MAX_BOUND_X, MAX_BOUND_X);
+	position.z = glm::clamp(position.z, -MAX_BOUND_Z, MAX_BOUND_Z);
 }
