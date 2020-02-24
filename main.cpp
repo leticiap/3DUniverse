@@ -26,8 +26,6 @@
 #include "Model.h"
 #include "Skybox.h"
 
-const float toRadians = 3.14159265f / 180.0f;
-
 Window mainWindow;
 std::vector<Mesh*> meshList;
 
@@ -66,6 +64,9 @@ static const char* vShader = "Shaders/shader.vert";
 
 // Fragment Shader
 static const char* fShader = "Shaders/shader.frag";
+
+GLfloat catAngle = 0.0f;
+bool catMove = true;
 
 
 void CalcAverageNormals(unsigned int * indices, unsigned int indicesCount, GLfloat * vertices, unsigned int verticesCount, unsigned int vLenght, unsigned int normalOffset)
@@ -176,14 +177,26 @@ void RenderScene()
 
 	model = glm::mat4();
 	model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	dirtTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[2]->RenderMesh();
 
+	if (catMove)
+	{
+		catAngle += 0.1f;
+		if (catAngle > 360.0f)
+		{
+			catAngle = 0.1f;
+		}
+	}
+
 	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+	model = glm::rotate(model, glm::radians(-catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(5.0f, -2.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	plainTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -379,6 +392,7 @@ int main()
 
 		if (mainWindow.getKeys()[GLFW_KEY_T])
 		{
+			catMove = false;
 			cat = Model();
 			cat.LoadModel("Material/Cat1.obj");
 		}
