@@ -27,6 +27,7 @@
 #include "Material.h"
 #include "Model.h"
 #include "Skybox.h"
+#include "CollisionDetection.h"
 
 Window mainWindow;
 std::vector<Mesh*> meshList;
@@ -45,6 +46,8 @@ Material dullMaterial;
 
 Model cat;
 Model wand;
+
+glm::vec3 catPosition;
 
 DirectionalLight mainLight;
 PointLight pointLights[MAX_POINT_LIGHTS];
@@ -159,23 +162,26 @@ void CreateShaders()
 
 void RenderScene()
 {
+
 	glm::mat4 model;
 
+	//Pyramid 1 rendering
 	model = glm::translate(model, glm::vec3(0.0f, -1.5f, -7.5f));
-	//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	brickTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[0]->RenderMesh();
 
+	//Pyramid 2 rendering
 	model = glm::mat4();
 	model = glm::translate(model, glm::vec3(0.0f, -1.5, 1.5f));
-	//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	dirtTexture.UseTexture();
 	dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[1]->RenderMesh();
 
+
+	// Plane rendering
 	model = glm::mat4();
 	model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
@@ -183,8 +189,6 @@ void RenderScene()
 	dirtTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[2]->RenderMesh();
-
-
 	
 	// Cat rendering
 	if (catMove)
@@ -205,7 +209,6 @@ void RenderScene()
 	plainTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	cat.RenderModel();
-
 
 	// Wand rendering
 	model = glm::mat4();
@@ -304,7 +307,6 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 
 int main()
 {
-
 	mainWindow = Window(1024, 768);
 	mainWindow.Initialise();
 
@@ -399,7 +401,7 @@ int main()
 			mainWindow.getKeys()[GLFW_KEY_L] = false;
 		}
 
-		if (mainWindow.getKeys()[GLFW_KEY_T])
+		if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Cat(camera->getCameraPosition(), catAngle))
 		{
 			catMove = false;
 			cat = Model();
