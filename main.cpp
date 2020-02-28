@@ -1,3 +1,5 @@
+// TODO: Add colision to the objects
+
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <stdio.h>
@@ -67,7 +69,6 @@ static const char* fShader = "Shaders/shader.frag";
 
 GLfloat catAngle = 0.0f;
 bool catMove = true;
-
 
 void CalcAverageNormals(unsigned int * indices, unsigned int indicesCount, GLfloat * vertices, unsigned int verticesCount, unsigned int vLenght, unsigned int normalOffset)
 {
@@ -183,7 +184,9 @@ void RenderScene()
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[2]->RenderMesh();
 
-	// add "colision" to the wand, cat and triangles
+
+	
+	// Cat rendering
 	if (catMove)
 	{
 		catAngle += 5.0f * deltaTime;
@@ -192,6 +195,7 @@ void RenderScene()
 			catAngle = 0.1f;
 		}
 	}
+
 	model = glm::mat4();
 	model = glm::rotate(model, glm::radians(-catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::translate(model, glm::vec3(5.0f, -3.0f, 0.0f));
@@ -202,15 +206,18 @@ void RenderScene()
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	cat.RenderModel();
 
-	// do something similar to pitch/yaw to rotate the wand with the came
-	// use the camera position to do the translate (it works!)
+
+	// Wand rendering
 	model = glm::mat4();
-	model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(.0f, 1.0f, 0.0f));
+	model = glm::translate(model, camera->getCameraPosition());
+	model = glm::rotate(model, glm::radians(-camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(camera->getPitch()), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, glm::vec3(0.04f, 0.04f, 0.04f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	brickTexture.UseTexture();
+	plainTexture.UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	wand.RenderModel();
+
 }
 
 void DirectionalShadowMapPass(DirectionalLight* light)

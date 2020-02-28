@@ -19,6 +19,11 @@ public:
 	glm::mat4 CalculateViewMatrix();
 
 
+	// Methods to fix objects in front of the camera
+	GLfloat getPitch() { return pitch; };
+	GLfloat getYaw() { return yaw; };
+
+
 private:
 	Camera() { Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.0f, 0.5f); };
 
@@ -29,6 +34,7 @@ private:
 	glm::vec3 up;
 	glm::vec3 right;
 	glm::vec3 worldUp;
+
 	// used to move the character on the x/z axis
 	glm::vec3 frontFixedY;
 	glm::vec3 rightFixedY;
