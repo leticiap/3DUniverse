@@ -37,9 +37,10 @@ Shader directionalShadowShader;
 Shader omniShadowShader;
 Camera* camera;
 
-Texture brickTexture;
-Texture dirtTexture;
-Texture plainTexture;
+Texture textures[3];
+
+int pyramidText1 = 0;
+int pyramidText2 = 1;
 
 Material shinyMaterial;
 Material dullMaterial;
@@ -168,7 +169,7 @@ void RenderScene()
 	//Pyramid 1 rendering
 	model = glm::translate(model, glm::vec3(0.0f, -1.5f, -7.5f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	brickTexture.UseTexture();
+	textures[pyramidText1].UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[0]->RenderMesh();
 
@@ -176,17 +177,16 @@ void RenderScene()
 	model = glm::mat4();
 	model = glm::translate(model, glm::vec3(0.0f, -1.5, 1.5f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	dirtTexture.UseTexture();
+	textures[pyramidText2].UseTexture();
 	dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[1]->RenderMesh();
-
 
 	// Plane rendering
 	model = glm::mat4();
 	model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	dirtTexture.UseTexture();
+	textures[1].UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[2]->RenderMesh();
 	
@@ -202,11 +202,11 @@ void RenderScene()
 
 	model = glm::mat4();
 	model = glm::rotate(model, glm::radians(-catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(5.0f, -3.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(7.0f, -3.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
 	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	plainTexture.UseTexture();
+	textures[2].UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	cat.RenderModel();
 
@@ -217,7 +217,7 @@ void RenderScene()
 	model = glm::rotate(model, glm::radians(camera->getPitch()), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, glm::vec3(0.04f, 0.04f, 0.04f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	plainTexture.UseTexture();
+	textures[2].UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	wand.RenderModel();
 
@@ -315,12 +315,12 @@ int main()
 
 	camera = Camera::getInstance();
 
-	brickTexture = Texture((char *) "Textures/brick.png");
-	brickTexture.LoadTextureAlpha();
-	dirtTexture = Texture((char *) "Textures/dirt.png");
-	dirtTexture.LoadTextureAlpha();
-	plainTexture = Texture((char *) "Textures/plain.png");
-	plainTexture.LoadTextureAlpha();
+	textures[0] = Texture((char *) "Textures/brick.png");
+	textures[0].LoadTextureAlpha();
+	textures[1] = Texture((char *) "Textures/dirt.png");
+	textures[1].LoadTextureAlpha();
+	textures[2] = Texture((char *) "Textures/plain.png");
+	textures[2].LoadTextureAlpha();
 
 	shinyMaterial = Material(4.0f, 256);
 	dullMaterial = Material(0.3f, 4);
@@ -401,11 +401,21 @@ int main()
 			mainWindow.getKeys()[GLFW_KEY_L] = false;
 		}
 
-		if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Cat(camera->getCameraPosition(), catAngle))
+		if (catMove && mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Cat(camera->getCameraPosition(), catAngle))
 		{
 			catMove = false;
 			cat = Model();
 			cat.LoadModel("Material/Cat1.obj");
+		}
+
+		if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Pyramid1(camera->getCameraPosition()))
+		{
+			pyramidText1 = (pyramidText1 - 1) * -1;
+		}
+
+		if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Pyramid2(camera->getCameraPosition()))
+		{
+			pyramidText2 = (pyramidText2 - 1) * -1;
 		}
 
 		DirectionalShadowMapPass(&mainLight);

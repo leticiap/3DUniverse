@@ -5,8 +5,8 @@ namespace CollisionDetection
 	bool Cat(glm::vec3 pos, float catAngle)
 	{
 		glm::vec3 catPos = glm::vec3(0.0f, 0.0f, 0.0f);
-		catPos.x = cos(glm::radians(catAngle)) * 5.0f;
-		catPos.z = sin(glm::radians(catAngle)) * 5.0f;
+		catPos.x = cos(glm::radians(catAngle)) * 7.0f;
+		catPos.z = sin(glm::radians(catAngle)) * 7.0f;
 		float catRad = 3.0f;
 		if (pos.x < catPos.x + catRad && pos.x > catPos.x - catRad)
 		{
@@ -28,7 +28,7 @@ namespace CollisionDetection
 	}
 	bool Pyramid2(glm::vec3 pos)
 	{
-		glm::vec3 pyramidPos = glm::vec3(0.0f, -1.5f, -7.5f);
+		glm::vec3 pyramidPos = glm::vec3(0.0f, -1.5, 1.5f);
 		float pyramidRad = 1.5f;
 		if (pos.x < pyramidPos.x + pyramidRad && pos.x > pyramidPos.x - pyramidRad)
 		{
