@@ -5,13 +5,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 #include "CommonValues.h"
+#include "CollisionDetection.h"
 
 class Camera
 {
 public:
 	static Camera* getInstance();
 
-	void KeyControl(bool* keys, GLfloat deltaTime);
+	void KeyControl(bool* keys, GLfloat deltaTime, float catAngle);
 	void MouseControl(GLfloat xChange, GLfloat yChange);
 
 	glm::vec3 getCameraPosition();

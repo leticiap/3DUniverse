@@ -74,6 +74,52 @@ static const char* fShader = "Shaders/shader.frag";
 GLfloat catAngle = 0.0f;
 bool catMove = true;
 
+float cooldown = 0;
+
+void HandleUserInput()
+{
+	// Get + Handle User Input
+	glfwPollEvents();
+	camera->KeyControl(mainWindow.getKeys(), deltaTime, catAngle);
+	camera->MouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+
+	if (cooldown <= 0)
+	{
+		if (mainWindow.getKeys()[GLFW_KEY_L])
+		{
+			spotLights[0].Toggle();
+			mainWindow.getKeys()[GLFW_KEY_L] = false;
+		}
+
+		if (catMove && mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Cat(camera->getCameraPosition(), catAngle, 4.0f))
+		{
+			catMove = false;
+			cat = Model();
+			cat.LoadModel("Material/Cat1.obj");
+			cooldown = 0.2f;
+		}
+
+		else if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Pyramid1(camera->getCameraPosition(), 3.0f))
+		{
+			// We must change from 0 to 1 and from 1 to 0, this is a easier way instead of keep checking "if value == 1"
+			pyramidText1 = (pyramidText1 - 1) * -1;
+			cooldown = 0.2f;
+		}
+
+		else if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Pyramid2(camera->getCameraPosition(), 3.0f))
+		{
+			// We must change from 0 to 1 and from 1 to 0, this is a easier way instead of keep checking "if value == 1"
+			pyramidText2 = (pyramidText2 - 1) * -1;
+			cooldown = 0.2f;
+		}
+	}
+	else
+	{
+		cooldown -= deltaTime;
+	}
+
+}
+
 void CalcAverageNormals(unsigned int * indices, unsigned int indicesCount, GLfloat * vertices, unsigned int verticesCount, unsigned int vLenght, unsigned int normalOffset)
 {
 	for (size_t i = 0; i < indicesCount; i+= 3)
@@ -175,7 +221,7 @@ void RenderScene()
 
 	//Pyramid 2 rendering
 	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(0.0f, -1.5, 1.5f));
+	model = glm::translate(model, glm::vec3(0.0f, -1.5, 3.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	textures[pyramidText2].UseTexture();
 	dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -193,16 +239,16 @@ void RenderScene()
 	// Cat rendering
 	if (catMove)
 	{
-		catAngle += 5.0f * deltaTime;
-		if (catAngle > 360.0f)
-		{
-			catAngle = 0.1f;
-		}
+		float newAngle = catAngle + 5.0f * deltaTime;
+		if (newAngle > 360.0f)
+			newAngle = 0.1f;
+		if (!CollisionDetection::Cat(camera->getCameraPosition(), newAngle, 2.0f))
+			catAngle = newAngle;
 	}
 
 	model = glm::mat4();
 	model = glm::rotate(model, glm::radians(-catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(7.0f, -3.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(10.0f, -3.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
 	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -390,33 +436,7 @@ int main()
 		deltaTime = timeNow - lastTime;
 		lastTime = timeNow;
 
-		// Get + Handle User Input
-		glfwPollEvents();
-		camera->KeyControl(mainWindow.getKeys(), deltaTime);
-		camera->MouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-
-		if (mainWindow.getKeys()[GLFW_KEY_L])
-		{
-			spotLights[0].Toggle();
-			mainWindow.getKeys()[GLFW_KEY_L] = false;
-		}
-
-		if (catMove && mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Cat(camera->getCameraPosition(), catAngle))
-		{
-			catMove = false;
-			cat = Model();
-			cat.LoadModel("Material/Cat1.obj");
-		}
-
-		if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Pyramid1(camera->getCameraPosition()))
-		{
-			pyramidText1 = (pyramidText1 - 1) * -1;
-		}
-
-		if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Pyramid2(camera->getCameraPosition()))
-		{
-			pyramidText2 = (pyramidText2 - 1) * -1;
-		}
+		HandleUserInput();
 
 		DirectionalShadowMapPass(&mainLight);
 		for (size_t i = 0; i < pointLightCount; i++)

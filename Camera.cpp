@@ -32,28 +32,38 @@ Camera * Camera::getInstance()
 	return _instance;
 }
 
-void Camera::KeyControl(bool * keys, GLfloat deltaTime)
+void Camera::KeyControl(bool * keys, GLfloat deltaTime, float catAngle)
 {
 	GLfloat velocity = moveSpeed * deltaTime;
+	glm::vec3 newPos = position;
+
 
 	if (keys[GLFW_KEY_W])
 	{
-		position += frontFixedY * velocity;
+		newPos += frontFixedY * velocity;
+		if (!CollisionDetection::AnyObject(newPos, catAngle))
+			position = newPos;
 	}
 
 	if (keys[GLFW_KEY_S])
 	{
-		position -= frontFixedY * velocity;
+		newPos -= frontFixedY * velocity;
+		if (!CollisionDetection::AnyObject(newPos, catAngle))
+			position = newPos;
 	}
 
 	if (keys[GLFW_KEY_A])
 	{
-		position -= rightFixedY * velocity;
+		newPos -= rightFixedY * velocity;
+		if (!CollisionDetection::AnyObject(newPos, catAngle))
+			position = newPos;
 	}
 
 	if (keys[GLFW_KEY_D])
 	{
-		position += rightFixedY * velocity;
+		newPos += rightFixedY * velocity;
+		if (!CollisionDetection::AnyObject(newPos, catAngle))
+			position = newPos;
 	}
 }
 

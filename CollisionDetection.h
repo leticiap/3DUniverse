@@ -5,7 +5,8 @@
 
 namespace CollisionDetection
 {
-	bool Cat(glm::vec3 pos, float catAngle);
-	bool Pyramid1(glm::vec3 pos);
-	bool Pyramid2(glm::vec3 pos);
+	bool AnyObject(glm::vec3 pos, float catAngle);
+	bool Cat(glm::vec3 pos, float catAngle, float catRad);
+	bool Pyramid1(glm::vec3 pos, float pyramidRad);
+	bool Pyramid2(glm::vec3 pos, float pyramidRad);
 }
