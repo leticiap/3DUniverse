@@ -31,7 +31,7 @@ namespace CollisionDetection
 	}
 	bool Pyramid2(glm::vec3 pos, float pyramidRad)
 	{
-		glm::vec3 pyramidPos = glm::vec3(0.0f, -1.5, 3.0f);
+		glm::vec3 pyramidPos = glm::vec3(0.0f, -1.5f, 3.0f);
 		if (pos.x < pyramidPos.x + pyramidRad && pos.x > pyramidPos.x - pyramidRad)
 		{
 			if (pos.z < pyramidPos.z + pyramidRad && pos.z > pyramidPos.z - pyramidRad)

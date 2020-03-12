@@ -37,7 +37,7 @@ Shader directionalShadowShader;
 Shader omniShadowShader;
 Camera* camera;
 
-Texture textures[3];
+Texture textures[4];
 
 int pyramidText1 = 0;
 int pyramidText2 = 1;
@@ -85,37 +85,38 @@ void HandleUserInput()
 
 	if (cooldown <= 0)
 	{
-		if (mainWindow.getKeys()[GLFW_KEY_L])
+		if (mainWindow.getKeys()[GLFW_KEY_T])
 		{
 			spotLights[0].Toggle();
+			if (catMove && CollisionDetection::Cat(camera->getCameraPosition(), catAngle, 3.5f))
+			{
+				catMove = false;
+				cat = Model();
+				cat.LoadModel("Material/Cat1.obj");
+			}
+
+			else if (CollisionDetection::Pyramid1(camera->getCameraPosition(), 3.0f))
+			{
+				// We must change from 0 to 1 and from 1 to 0, this is a easier way instead of keep checking "if value == 1"
+				pyramidText1 = (pyramidText1 - 1) * -1;
+			}
+
+			else if (CollisionDetection::Pyramid2(camera->getCameraPosition(), 3.0f))
+			{
+				// We must change from 0 to 1 and from 1 to 0, this is a easier way instead of keep checking "if value == 1"
+				pyramidText2 = (pyramidText2 - 1) * -1;
+			}
 			mainWindow.getKeys()[GLFW_KEY_L] = false;
-		}
-
-		if (catMove && mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Cat(camera->getCameraPosition(), catAngle, 4.0f))
-		{
-			catMove = false;
-			cat = Model();
-			cat.LoadModel("Material/Cat1.obj");
-			cooldown = 0.2f;
-		}
-
-		else if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Pyramid1(camera->getCameraPosition(), 3.0f))
-		{
-			// We must change from 0 to 1 and from 1 to 0, this is a easier way instead of keep checking "if value == 1"
-			pyramidText1 = (pyramidText1 - 1) * -1;
-			cooldown = 0.2f;
-		}
-
-		else if (mainWindow.getKeys()[GLFW_KEY_T] && CollisionDetection::Pyramid2(camera->getCameraPosition(), 3.0f))
-		{
-			// We must change from 0 to 1 and from 1 to 0, this is a easier way instead of keep checking "if value == 1"
-			pyramidText2 = (pyramidText2 - 1) * -1;
 			cooldown = 0.2f;
 		}
 	}
 	else
 	{
 		cooldown -= deltaTime;
+		if (cooldown <= 0)
+		{
+			spotLights[0].Toggle();
+		}
 	}
 
 }
@@ -232,7 +233,7 @@ void RenderScene()
 	model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	textures[1].UseTexture();
+	textures[3].UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	meshList[2]->RenderMesh();
 	
@@ -343,9 +344,10 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	shaderList[0].SetTexture(1);
 	shaderList[0].SetDirectionalShadowMap(2);
 
-	glm::vec3 lowerLight = camera->getCameraPosition();
-	lowerLight.y -= 0.3f;
-	spotLights[0].SetFlash(lowerLight, camera->getCameraDirection());
+	glm::vec3 wandLight = camera->getCameraPosition();
+	wandLight.z += 0.5f;
+	wandLight.y += 0.5f;
+	spotLights[0].SetFlash(wandLight, camera->getCameraDirection());
 
 	shaderList[0].Validate();
 	RenderScene();
@@ -367,6 +369,8 @@ int main()
 	textures[1].LoadTextureAlpha();
 	textures[2] = Texture((char *) "Textures/plain.png");
 	textures[2].LoadTextureAlpha();
+	textures[3] = Texture((char *) "Textures/floor.png");
+	textures[3].LoadTextureAlpha();
 
 	shinyMaterial = Material(4.0f, 256);
 	dullMaterial = Material(0.3f, 4);
@@ -378,44 +382,28 @@ int main()
 	wand.LoadModel("Material/Wand.obj");
 
 	mainLight = DirectionalLight(2048, 2048,
-								1.0f, 0.53f, 0.3f,
-								0.1f, 0.9f,
+								1.0f, 0.8f, 0.5f,
+								0.6f, 0.9f,
 								-10.0f, -12.0f, 18.5f);
 
 	pointLights[0] = PointLight(1024, 1024, 
 								0.01f, 100.0f,
-								0.0f, 0.0f, 1.0f,
-								0.0f, 1.0f,
-								1.0f, 2.0f, 0.0f,
+								0.0f, 1.0f, 0.3f,
+								0.2f, 1.0f,
+								0.0f, 2.0f, 3.0f,
 								0.3f, 0.2f, 0.1f);
 	pointLightCount++;
-	pointLights[1] = PointLight(1024, 1024,
-								0.01f, 100.0f, 
-								0.0f, 1.0f, 0.0f,
-								0.0f, 1.0f,
-								-4.0f, 3.0f, 0.0f,
-								0.3f, 0.2f, 0.1f);
-	pointLightCount++;
-
 
 	spotLights[0] = SpotLight(1024, 1024,
 							0.1f, 100.0f,
-							1.0f, 1.0f, 1.0f,
+							1.0f, 1.0f, 0.4f,
 							0.0f, 2.0f,
 							0.0f, 0.0f, 0.0f,
 							0.0f, -1.0f, 0.0f,
 							1.0f, 0.0f, 0.0f,
 							20.0f);
 	spotLightCount++;
-	spotLights[1] = SpotLight(1024, 1024,
-							0.1f, 100.0f,
-							1.0f, 1.0f, 1.0f,
-							0.0f, 1.0f,
-							0.0f, -1.5f, 0.0f,
-							-100.0f, -1.0f, 0.0f,
-							1.0f, 0.0f, 0.0f,
-							20.0f);
-	spotLightCount++;
+
 
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("Textures/Skybox/Yokohama/posx.jpg");
