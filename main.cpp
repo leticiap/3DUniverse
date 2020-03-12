@@ -1,5 +1,3 @@
-// TODO: Add colision to the objects
-
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <stdio.h>
