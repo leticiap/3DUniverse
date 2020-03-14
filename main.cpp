@@ -212,7 +212,7 @@ void RenderScene()
 	glm::mat4 model;
 
 	//Pyramid 1 rendering
-	model = glm::translate(model, glm::vec3(0.0f, -1.5f, -7.5f));
+	model = glm::translate(model, glm::vec3(0.0f, -1.0f, -7.5f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	textures[pyramidText1].UseTexture();
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -220,7 +220,7 @@ void RenderScene()
 
 	//Pyramid 2 rendering
 	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(0.0f, -1.5, 3.0f));
+	model = glm::translate(model, glm::vec3(0.0f, -1.0f, 3.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	textures[pyramidText2].UseTexture();
 	dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -228,7 +228,7 @@ void RenderScene()
 
 	// Plane rendering
 	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	textures[3].UseTexture();
@@ -247,7 +247,7 @@ void RenderScene()
 
 	model = glm::mat4();
 	model = glm::rotate(model, glm::radians(-catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(10.0f, -3.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(10.0f, -2.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
 	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -381,8 +381,8 @@ int main()
 
 	mainLight = DirectionalLight(2048, 2048,
 								1.0f, 0.8f, 0.5f,
-								0.6f, 0.9f,
-								-10.0f, -12.0f, 18.5f);
+								0.6f, 0.8f,
+								10.0f, -12.0f, 18.5f);
 
 	pointLights[0] = PointLight(1024, 1024, 
 								0.01f, 100.0f,
@@ -404,12 +404,12 @@ int main()
 
 
 	std::vector<std::string> skyboxFaces;
-	skyboxFaces.push_back("Textures/Skybox/Yokohama/posx.jpg");
-	skyboxFaces.push_back("Textures/Skybox/Yokohama/negx.jpg");
-	skyboxFaces.push_back("Textures/Skybox/Yokohama/posy.jpg");
-	skyboxFaces.push_back("Textures/Skybox/Yokohama/negy.jpg");
-	skyboxFaces.push_back("Textures/Skybox/Yokohama/posz.jpg");
-	skyboxFaces.push_back("Textures/Skybox/Yokohama/negz.jpg");
+	skyboxFaces.push_back("Textures/Skybox/DawnDusk_negz.jpg");
+	skyboxFaces.push_back("Textures/Skybox/DawnDusk_posz.jpg");
+	skyboxFaces.push_back("Textures/Skybox/DawnDusk_posy.jpg");
+	skyboxFaces.push_back("Textures/Skybox/DawnDusk_negy.jpg");
+	skyboxFaces.push_back("Textures/Skybox/DawnDusk_posx.jpg");
+	skyboxFaces.push_back("Textures/Skybox/DawnDusk_negx.jpg");
 
 	skybox = Skybox(skyboxFaces);
 

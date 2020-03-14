@@ -26,7 +26,7 @@ Camera * Camera::getInstance()
 	static Camera*  _instance;
 	if (!_instance)
 	{
-		_instance = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.0f, 0.5f);
+		_instance = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.0f, 0.5f);
 	}
 
 	return _instance;
